@@ -4,7 +4,6 @@ import torch.nn.functional as F
 from einops import reduce
 from termcolor import cprint
 
-from maniflow.model.common.normalizer import LinearNormalizer
 from maniflow.policy.base_policy import BasePolicy
 from maniflow.common.pytorch_util import dict_apply
 from maniflow.common.model_util import print_params
@@ -113,7 +112,6 @@ class ManiFlowTransformerPointcloudPolicy(BasePolicy):
         self.obs_encoder = obs_encoder
         self.model = model
         
-        self.normalizer = LinearNormalizer()
         self.horizon = horizon
         self.obs_feature_dim = obs_feature_dim
         self.action_dim = action_dim
@@ -180,7 +178,7 @@ class ManiFlowTransformerPointcloudPolicy(BasePolicy):
         result: must include "action" key
         """
         # normalize input
-        nobs = self.normalizer.normalize(obs_dict)
+        nobs = obs_dict
         if not self.use_pc_color:
             nobs['point_cloud'] = nobs['point_cloud'][..., :3]
         
@@ -220,7 +218,7 @@ class ManiFlowTransformerPointcloudPolicy(BasePolicy):
         
         # unnormalize prediction
         naction_pred = nsample[...,:Da]
-        action_pred = self.normalizer['action'].unnormalize(naction_pred)
+        action_pred = naction_pred
 
         # get action
         start = To - 1
@@ -236,9 +234,6 @@ class ManiFlowTransformerPointcloudPolicy(BasePolicy):
         return result
 
     # ========= training  ============
-    def set_normalizer(self, normalizer: LinearNormalizer):
-        self.normalizer.load_state_dict(normalizer.state_dict())
-    
     def get_optimizer(
             self, 
             lr: float,
@@ -473,8 +468,8 @@ class ManiFlowTransformerPointcloudPolicy(BasePolicy):
 
     def compute_loss(self, batch, ema_model=None, **kwargs):
         # normalize input
-        nobs = self.normalizer.normalize(batch['obs'])
-        nactions = self.normalizer['action'].normalize(batch['action']).to(self.device)
+        nobs = batch['obs']
+        nactions = batch['action']
 
         if not self.use_pc_color:
             nobs['point_cloud'] = nobs['point_cloud'][..., :3]
