@@ -15,7 +15,6 @@ import torch.nn.functional as F
 from timm.models.vision_transformer import Mlp, RmsNorm
 from maniflow.model.diffusion.positional_embedding import SinusoidalPosEmb
 from maniflow.model.diffusion.ditx_block import DiTXBlock, AdaptiveLayerNorm
-from termcolor import cprint
 
 logger = logging.getLogger(__name__)
 
@@ -132,14 +131,14 @@ class DiTX(nn.Module):
                 DiTXBlock(n_emb, n_head, mlp_ratio=mlp_ratio, p_drop_attn=p_drop_attn, 
                     qkv_bias=qkv_bias, qk_norm=qk_norm) for _ in range(n_layer)
             ])
-            cprint(f"[DiTX Transformer] Initialized {n_layer} DiTX blocks with hidden size {n_emb}, "
-                    f"num heads {n_head}, mlp ratio {mlp_ratio}, dropout {p_drop_attn}, qkv_bias {qkv_bias}, qk_norm {qk_norm}", "cyan")
+            print(f"[DiTX Transformer] Initialized {n_layer} DiTX blocks with hidden size {n_emb}, "
+                    f"num heads {n_head}, mlp ratio {mlp_ratio}, dropout {p_drop_attn}, qkv_bias {qkv_bias}, qk_norm {qk_norm}")
         
         # Final Layer
         self.final_layer = FinalLayer(n_emb, output_dim)
 
         self.initialize_weights()
-        cprint(f"[DiTX Transformer] Initialized weights for DiTX", "green")
+        print(f"[DiTX Transformer] Initialized weights for DiTX")
 
         
         logger.info(
@@ -189,7 +188,7 @@ class DiTX(nn.Module):
                 param.requires_grad = False
 
         self.language_encoder_out_dim = 512
-        cprint(f"Loaded T5 encoder: {encoder_name}", "green")
+        print(f"Loaded T5 encoder: {encoder_name}")
 
     def encode_text_input_T5(self,
                              lang_cond,

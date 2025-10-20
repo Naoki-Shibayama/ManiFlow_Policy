@@ -2,7 +2,6 @@ from typing import Dict, Tuple
 import torch
 import torch.nn.functional as F
 from einops import reduce
-from termcolor import cprint
 
 from maniflow.policy.base_policy import BasePolicy
 from maniflow.common.pytorch_util import dict_apply
@@ -63,7 +62,7 @@ class ManiFlowTransformerImagePolicy(BasePolicy):
             global_cond_dim = obs_feature_dim
 
      
-        cprint(f"[ManiFlowTransformerPointcloudPolicy] Using DiTX model", "red")
+        print(f"[ManiFlowTransformerPointcloudPolicy] Using DiTX model")
         model = DiTX(
             input_dim=input_dim,
             output_dim=action_dim,
@@ -105,18 +104,18 @@ class ManiFlowTransformerImagePolicy(BasePolicy):
         self.sample_target_t_mode = sample_target_t_mode
         assert self.sample_target_t_mode in ["absolute", "relative"], "sample_target_t_mode must be either 'absolute' or 'relative'"
         
-        cprint(f"[ManiFlowTransformerImagePolicy] Initialized with parameters:", "yellow")
-        cprint(f"  - horizon: {self.horizon}", "yellow")
-        cprint(f"  - n_action_steps: {self.n_action_steps}", "yellow")
-        cprint(f"  - n_obs_steps: {self.n_obs_steps}", "yellow")
-        cprint(f"  - num_inference_steps: {self.num_inference_steps}", "yellow")
-        cprint(f"  - flow_batch_ratio: {self.flow_batch_ratio}", "yellow")
-        cprint(f"  - consistency_batch_ratio: {self.consistency_batch_ratio}", "yellow")
-        cprint(f"  - denoise_timesteps: {self.denoise_timesteps}", "yellow")
-        cprint(f"  - sample_t_mode_flow: {self.sample_t_mode_flow}", "yellow")
-        cprint(f"  - sample_t_mode_consistency: {self.sample_t_mode_consistency}", "yellow")
-        cprint(f"  - sample_dt_mode_consistency: {self.sample_dt_mode_consistency}", "yellow")
-        cprint(f"  - sample_target_t_mode: {self.sample_target_t_mode}", "yellow")
+        print(f"[ManiFlowTransformerImagePolicy] Initialized with parameters:")
+        print(f"  - horizon: {self.horizon}")
+        print(f"  - n_action_steps: {self.n_action_steps}")
+        print(f"  - n_obs_steps: {self.n_obs_steps}")
+        print(f"  - num_inference_steps: {self.num_inference_steps}")
+        print(f"  - flow_batch_ratio: {self.flow_batch_ratio}")
+        print(f"  - consistency_batch_ratio: {self.consistency_batch_ratio}")
+        print(f"  - denoise_timesteps: {self.denoise_timesteps}")
+        print(f"  - sample_t_mode_flow: {self.sample_t_mode_flow}")
+        print(f"  - sample_t_mode_consistency: {self.sample_t_mode_consistency}")
+        print(f"  - sample_dt_mode_consistency: {self.sample_dt_mode_consistency}")
+        print(f"  - sample_target_t_mode: {self.sample_target_t_mode}")
 
         print_params(self)
         
@@ -219,7 +218,7 @@ class ManiFlowTransformerImagePolicy(BasePolicy):
         backbone_params = list()
         other_obs_params = list()
         if obs_encoder_lr is not None:
-            cprint(f"[ManiFlowTransformerImagePolicy] Use different lr for obs_encoder: {obs_encoder_lr}", "yellow")
+            print(f"[ManiFlowTransformerImagePolicy] Use different lr for obs_encoder: {obs_encoder_lr}")
             for key, value in self.obs_encoder.named_parameters():
                 if key.startswith('key_model_map'):
                     backbone_params.append(value)

@@ -5,7 +5,6 @@ import copy
 
 from typing import Optional, Dict, Tuple, Union, List, Type
 import maniflow.model.vision_3d.point_process as point_process
-from termcolor import cprint
 
 def create_mlp(
         input_dim: int,
@@ -72,8 +71,8 @@ class PointNetEncoderXYZRGB(nn.Module):
         """
         super().__init__()
         block_channel = [64, 128, 256, 512]
-        cprint("pointnet use_layernorm: {}".format(use_layernorm), 'cyan')
-        cprint("pointnet use_final_norm: {}".format(final_norm), 'cyan')
+        print("pointnet use_layernorm: {}".format(use_layernorm))
+        print("pointnet use_final_norm: {}".format(final_norm))
         
         self.mlp = nn.Sequential(
             nn.Linear(in_channels, block_channel[0]),
@@ -133,10 +132,10 @@ class PointNetEncoderXYZ(nn.Module):
         """
         super().__init__()
         block_channel = [64, 128, 256]
-        cprint("[PointNetEncoderXYZ] use_layernorm: {}".format(use_layernorm), 'cyan')
-        cprint("[PointNetEncoderXYZ] use_final_norm: {}".format(final_norm), 'cyan')
+        print("[PointNetEncoderXYZ] use_layernorm: {}".format(use_layernorm))
+        print("[PointNetEncoderXYZ] use_final_norm: {}".format(final_norm))
         
-        assert in_channels == 3, cprint(f"PointNetEncoderXYZ only supports 3 channels, but got {in_channels}", "red")
+        assert in_channels == 3, print(f"PointNetEncoderXYZ only supports 3 channels, but got {in_channels}")
        
         self.mlp = nn.Sequential(
             nn.Linear(in_channels, block_channel[0]),
@@ -164,7 +163,7 @@ class PointNetEncoderXYZ(nn.Module):
         self.use_projection = use_projection
         if not use_projection:
             self.final_projection = nn.Identity()
-            cprint("[PointNetEncoderXYZ] not use projection", "yellow")
+            print("[PointNetEncoderXYZ] not use projection")
         
         self.pointwise = pointwise
             
@@ -242,12 +241,12 @@ class DP3Encoder(nn.Module):
         else:
             self.point_preprocess = nn.Identity()
             self.num_points = self.point_cloud_shape[1]
-        cprint(f"[DP3Encoder] State MLP size: {state_mlp_size}", "yellow")
-        cprint(f"[DP3Encoder] point cloud shape: {self.point_cloud_shape}", "yellow")
-        cprint(f"[DP3Encoder] state shape: {self.state_shape}", "yellow")
-        cprint(f"[DP3Encoder] imagination point shape: {self.imagination_shape}", "yellow")
+        print(f"[DP3Encoder] State MLP size: {state_mlp_size}")
+        print(f"[DP3Encoder] point cloud shape: {self.point_cloud_shape}")
+        print(f"[DP3Encoder] state shape: {self.state_shape}")
+        print(f"[DP3Encoder] imagination point shape: {self.imagination_shape}")
         if self.downsample_points:
-            cprint(f"[DP3Encoder] Downsampling enabled. Using {self.num_points} points from the point cloud.", "yellow")
+            print(f"[DP3Encoder] Downsampling enabled. Using {self.num_points} points from the point cloud.")
         
 
         self.use_pc_color = use_pc_color
@@ -274,14 +273,14 @@ class DP3Encoder(nn.Module):
         self.state_mlp = nn.Sequential(*create_mlp(self.state_shape[0], output_dim, net_arch, state_mlp_activation_fn))
         self.pointwise = pointcloud_encoder_cfg.get('pointwise', False)
 
-        cprint(f"[DP3Encoder] output dim: {self.n_output_channels}", "red")
-        cprint(f"[DP3Encoder] pointwise: {self.pointwise}", "red")
-        cprint(f"[DP3Encoder] output points num: {self.num_points}", "red") if self.pointwise else cprint(f"[DP3Encoder] output points num: 1", "red")
+        print(f"[DP3Encoder] output dim: {self.n_output_channels}")
+        print(f"[DP3Encoder] pointwise: {self.pointwise}")
+        print(f"[DP3Encoder] output points num: {self.num_points}") if self.pointwise else print(f"[DP3Encoder] output points num: 1")
 
 
     def forward(self, observations: Dict) -> torch.Tensor:
         points = observations[self.point_cloud_key]
-        assert len(points.shape) == 3, cprint(f"point cloud shape: {points.shape}, length should be 3", "red")
+        assert len(points.shape) == 3, print(f"point cloud shape: {points.shape}, length should be 3")
         if self.use_imagined_robot:
             img_points = observations[self.imagination_key][..., :points.shape[-1]] # align the last dim
             points = torch.concat([points, img_points], dim=1)

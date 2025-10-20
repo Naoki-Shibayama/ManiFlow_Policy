@@ -7,7 +7,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 import logging
-from termcolor import cprint
 
 from maniflow.model.common.module_attr_mixin import ModuleAttrMixin
 
@@ -89,7 +88,7 @@ class TimmObsEncoder(ModuleAttrMixin):
             from r3m import load_r3m
             model = load_r3m("resnet18", pretrained=pretrained) # resnet18, resnet34
             model.eval()
-            cprint(f"Loaded R3M model using {model_name}. pretrained={pretrained}", 'green')
+            print(f"Loaded R3M model using {model_name}. pretrained={pretrained}")
         else:
             model = timm.create_model(
                 model_name=model_name,
@@ -174,7 +173,7 @@ class TimmObsEncoder(ModuleAttrMixin):
                 if not attr.get('ignore_by_policy', False):
                     low_dim_keys.append(key)
             else:
-                cprint(f"Skipping obs key {key} with type {type}", 'red')
+                print(f"Skipping obs key {key} with type {type}")
         
         feature_map_shape = [x // downsample_ratio for x in image_shape]
             
